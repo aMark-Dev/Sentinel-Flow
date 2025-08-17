@@ -35,3 +35,42 @@ Este documento descreve os DataFrames criados e utilizados no projeto "Sentinel 
 | **UMIDADE...** | `float64` | Umidade relativa do ar em porcentagem (%). *...* |
 | **VENTO...** | `float64` | Velocidade média do vento em metros por segundo (m/s). *...* |
 | **variacao_volume** | `float64` | **A VARIÁVEL ALVO.** Calculada como `volume_hoje - volume_ontem`. Representa a perda ou ganho de volume em hm³ de um dia para o outro. |
+
+---
+## English Version
+
+# Data Dictionary
+
+This document describes the DataFrames created and used in the "Sentinel Flow" project.
+
+---
+
+## 1. Raw Data
+
+* **`dados_tratados_ana_carnaubal.csv`**
+    * **Description:** Historical time series of the daily volume of the Carnaubal Reservoir, extracted from the SAR/ANA portal and processed from the original JSON file.
+    * **Columns:**
+        * `data` (datetime): Measurement date in YYYY-MM-DD format.
+        * `volume` (float): Reservoir volume in cubic hectometers (hm³).
+
+* **`clima.csv`**
+    * **Description:** Historical time series of meteorological data from the INMET station closest to the Carnaubal Reservoir (Crateús).
+    * **Columns:** Contains various climate variables, such as `PRECIPITATION`, `GLOBAL RADIATION`, `TEMPERATURE`, etc.
+
+---
+
+## 2. Processed Data
+
+* **`dados_tratados_ana_carnaubal_completo2.csv`**
+    * **Description:** The master dataset, cleaned and unified, ready for training the Machine Learning model. It results from the merging of the volume and climate files.
+
+| Column Name | Data Type | Description |
+| :--- | :--- | :--- |
+| **data** | `datetime64[ns]` | Measurement date, used as the key for the merge. |
+| **volume** | `float64` | Total reservoir volume on that day, in cubic hectometers (hm³). |
+| **PRECIPITACAO...** | `float64` | Total daily precipitation in millimeters (mm). *(List the exact names of your climate columns)*. |
+| **RADIACAO GLOBAL...**| `float64` | Accumulated global solar radiation for the day in Kj/m². *...* |
+| **TEMPERATURA...** | `float64` | Average/max/min air temperature in Degrees Celsius (°C). *...* |
+| **UMIDADE...** | `float64` | Relative air humidity in percentage (%). *...* |
+| **VENTO...** | `float64` | Average wind speed in meters per second (m/s). *...* |
+| **variacao_volume** | `float64` | **THE TARGET VARIABLE.** Calculated as `volume_today - volume_yesterday`. It represents the loss or gain in volume (in hm³) from one day to the next. |
