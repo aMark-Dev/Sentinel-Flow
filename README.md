@@ -1,51 +1,62 @@
-# Sentinel Flow
+# Sentinel Flow: Modelo Analítico da Evaporação em Reservatórios do Semiárido
 
-# Sentinel Flow: Previsão de Variação Volumétrica com IA
+![Python](https://img.shields.io/badge/Python-3.12-blue.svg)
+![Pandas](https://img.shields.io/badge/Pandas-2.x-blue.svg)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.x-orange.svg)
+![XGBoost](https://img.shields.io/badge/XGBoost-3.x-green.svg)
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
-![Pandas](https://img.shields.io/badge/Pandas-2.0-blue.svg)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.3-orange.svg)
-
-Este repositório contém o código e os dados para o projeto "Sentinel Flow", uma iniciativa de ciência de dados para modelar e prever a variação diária de volume em reservatórios do semiárido brasileiro, utilizando dados públicos de clima e Machine Learning.
+Este repositório documenta a jornada de pesquisa e desenvolvimento do projeto "Sentinel Flow", uma investigação em ciência de dados sobre a modelagem da perda de água em reservatórios no semiárido brasileiro, utilizando dados públicos e aplicando tanto técnicas de Machine Learning quanto modelos analíticos baseados em física.
 
 ---
 
 ## Sobre o Projeto
 
-Nascido no Ceará, uma região onde a segurança hídrica é uma questão vital, este projeto surgiu da curiosidade de aplicar a Inteligência Artificial para entender um dos maiores desafios locais: a perda de água por evaporação em nossos reservatórios, conhecidos como "açudes".
+Nascido no Ceará, Brasil, uma região onde a segurança hídrica é uma questão de importância crítica, este projeto começou com uma pergunta aparentemente simples: "É possível usar dados de clima para prever a variação diária de volume de um reservatório (açude) com Inteligência Artificial?".
 
-O objetivo é construir um modelo de Machine Learning capaz de prever a variação diária de volume (`ΔVolume`) com base em variáveis meteorológicas, servindo como uma ferramenta para estudos de impacto climático e gestão de recursos hídricos.
+A investigação evoluiu de um modelo preditivo para um **modelo analítico**, após a constatação de que variáveis não-medidas (como consumo de água e aporte de rios) introduziam um ruído significativo que limitava a performance dos algoritmos de Machine Learning.
 
-## Metodologia
+O objetivo final do projeto tornou-se, então, mais focado e cientificamente robusto: **calcular a taxa de evapotranspiração diária (ETo)** a partir de dados meteorológicos e analisar seus padrões sazonais, servindo como uma ferramenta valiosa para a compreensão do balanço hídrico da região.
 
-O projeto é dividido em duas fases principais:
-* **Fase 1 (Protótipo):** Coleta de dados brutos, limpeza, unificação e treinamento de um modelo de base (`RandomForestRegressor`) para validar a viabilidade da abordagem.
-* **Fase 2 (Refinamento):** Aplicação de técnicas avançadas de **Engenharia de Features** (Lag Features, Janelas Móveis) e uso de modelos mais potentes (XGBoost) para melhorar a performance e a precisão das previsões.
+## Metodologia: Uma Jornada em Três Fases
 
-## Fontes de Dados
-* **Dados de Volume dos Reservatórios:** Sistema de Acompanhamento de Reservatórios (SAR) da Agência Nacional de Águas (ANA).
-* **Dados Meteorológicos:** Instituto Nacional de Meteorologia (INMET).
+A metodologia deste projeto reflete um ciclo de pesquisa iterativo, progredindo em complexidade e adaptando a estratégia com base nas evidências.
 
-## Tecnologias Utilizadas
+### Fase 1: Modelo Preditivo de Base (Baseline)
+* **Objetivo:** Testar a hipótese inicial de que dados climáticos de um dia (`t`) poderiam prever a variação de volume (`ΔV`) nesse mesmo dia.
+* **Técnica:** Foi treinado um modelo `RandomForestRegressor`.
+* **Resultado:** O modelo resultou em um **R² negativo (-0.36)**, provando que a relação direta era inviável e que o modelo performava pior do que uma simples média. A análise completa está no diretório `/Fase 1`.
+
+### Fase 2: Modelo Preditivo Avançado
+* **Objetivo:** Aprimorar o modelo base, fornecendo-lhe "memória" através de Engenharia de Features e utilizando um algoritmo mais potente.
+* **Técnica:** Foram criadas **Lag Features** (dados climáticos de `t-1`, `t-2`, `t-3` dias) e o modelo foi substituído por um `XGBoost`.
+* **Resultado:** Apesar dos ajustes, o R² continuou negativo, e a análise de importância das features revelou que o "sinal" da evaporação era completamente ofuscado pelo "ruído" de variáveis não-medidas (consumo e aporte). A análise completa está no diretório `/Fase 2`.
+
+### Fase 3: Pivô para Modelo Analítico (Resultado Final)
+* **Objetivo:** Mudar a pergunta. Em vez de prever a ruidosa `ΔV`, o foco tornou-se **calcular** a evaporação, uma de suas componentes mais importantes.
+* **Técnica:** Implementação em Python de um modelo físico-matemático que utiliza a **radiação solar medida** para estimar a evapotranspiração diária, baseado em fatores de conversão da FAO (Organização das Nações Unidas para a Alimentação e a Agricultura).
+* **Resultado:** Geração de uma série temporal de evaporação diária (`mm/dia`) com valores fisicamente realistas e um padrão sazonal claro e consistente. A análise está no diretório `/Fase 3`.
+
+## Principais Insights e Conclusões
+O resultado final do modelo analítico permitiu as seguintes conclusões:
+* A taxa de evaporação na região do Açude Carnaubal exibe uma forte **sazonalidade**, com picos consistentes de até **12 mm/dia** durante a estação seca (segundo semestre do ano).
+* A abordagem de Machine Learning preditivo foi ineficaz não por uma falha no algoritmo, mas pela **ausência de variáveis críticas** nos dados públicos, uma lição fundamental em modelagem de sistemas complexos.
+* O projeto final entrega uma ferramenta analítica capaz de gerar uma estimativa robusta de evaporação, com potencial de uso em estudos de balanço hídrico.
+
+## Tecnologias e Conceitos
 * **Linguagem:** Python
-* **Bibliotecas Principais:**
-    * **Pandas:** Para manipulação, limpeza e unificação das séries temporais.
-    * **Scikit-learn:** Para treinamento e avaliação dos modelos de Machine Learning.
-    * **Matplotlib / Seaborn:** Para visualização e análise de dados.
-* **Ferramentas:**
-    * **Git & GitHub:** Para controle de versão.
-    * **Jupyter Notebook:** Para desenvolvimento e análise exploratória.
+* **Bibliotecas:** Pandas, NumPy, Scikit-learn, XGBoost, Matplotlib, Seaborn
+* **Conceitos:** Análise de Séries Temporais, Engenharia de Features (Lag Features), Modelagem Preditiva (Random Forest, XGBoost), Validação de Modelos (R², MAE), Análise de Importância de Features, Depuração de Modelos (Data Leakage), Modelagem Analítica.
+* **Ferramentas:** Git/GitHub, Jupyter Notebook, Ambientes Virtuais (`.venv`)
 
 ## Estrutura do Repositório
-* **/ (Raiz):** Contém este README e os notebooks principais.
-* **/DF/:** Contém os DataFrames utilizados e salvos durante o projeto, com um `README.md` explicando cada um (Dicionário de Dados).
-* **/Fase 1/:** Contém o modelo criado na primeira fase e um `README.md` com a análise detalhada dos resultados e aprendizados.
+* **/DF/:** Contém os DataFrames brutos e processados, com seu respectivo Dicionário de Dados.
+* **/Fase 1/, /Fase 2/, /Fase 3/:** Contém os notebooks e `READMEs` analíticos para cada fase da investigação.
 
 ## Como Executar
-1.  Clone este repositório: `git clone https://github.com/seu-usuario/Sentinel-Flow.git`
-2.  Crie e ative um ambiente virtual: `python -m venv .venv` e `source .venv/bin/activate` (ou `.\.venv\Scripts\activate` no Windows).
-3.  Instale as dependências: `pip install -r requirements.txt` (Crie este arquivo com `pip freeze > requirements.txt`).
-4.  Execute os notebooks Jupyter na ordem numérica.
+1.  Clone este repositório.
+2.  Crie e ative um ambiente virtual.
+3.  Instale as dependências com `pip install -r requirements.txt`.
+4.  Execute os notebooks Jupyter na ordem numérica para reproduzir a análise.
 
 ## Autor
 * **Marcos Antonio**
@@ -55,46 +66,58 @@ O projeto é dividido em duas fases principais:
 
 ## English Version
 
-# Sentinel Flow: Reservoir Volumetric Change Prediction with AI
+# Sentinel Flow: An Analytical Model of Evaporation in Semi-Arid Reservoirs
 
-This repository contains the code and data for the "Sentinel Flow" project, a data science initiative to model and predict the daily volumetric change in Brazilian semi-arid reservoirs using public weather data and Machine Learning.
+This repository documents the research and development journey of the "Sentinel Flow" project, a data science investigation into modeling water loss in reservoirs of the Brazilian semi-arid region, applying both Machine Learning techniques and physics-based analytical models.
 
 ## About The Project
 
-Born in Ceará, a Brazilian state where water security is a vital issue, this project stems from the curiosity to apply Artificial Intelligence to understand one of the major local challenges: water loss by evaporation in our reservoirs, known as "açudes".
+Originating in Ceará, Brazil, a region where water security is a critically important issue, this project began with a seemingly simple question: "Is it possible to use climate data to predict the daily volume change of a reservoir (known as an 'açude') with Artificial Intelligence?"
 
-The goal is to build a Machine Learning model capable of predicting the daily change in volume (`ΔVolume`) based on meteorological variables, serving as a tool for climate impact studies and water resource management.
+The investigation evolved from a predictive model to an **analytical model**, following the discovery that unmeasured variables (such as water consumption and river inflow) introduced significant noise that limited the performance of Machine Learning algorithms.
 
-## Methodology
+The project's final objective, therefore, became more focused and scientifically robust: **to calculate the daily reference evapotranspiration (ETo)** from meteorological data and analyze its seasonal patterns, serving as a valuable tool for understanding the region's water balance.
 
-The project is divided into two main phases:
-* **Phase 1 (Prototype):** Raw data collection, cleaning, merging, and training of a baseline model (`RandomForestRegressor`) to validate the approach's feasibility.
-* **Phase 2 (Refinement):** Application of advanced **Feature Engineering** techniques (Lag Features, Rolling Windows) and the use of more powerful models (XGBoost) to improve the performance and accuracy of the predictions.
+## Methodology: A Three-Phase Journey
 
-## Data Sources
-* **Reservoir Volume Data:** Reservoir Monitoring System (SAR) from the National Water Agency of Brazil (ANA).
-* **Meteorological Data:** National Institute of Meteorology of Brazil (INMET).
+The project's methodology reflects an iterative research cycle, progressing in complexity and adapting the strategy based on evidence.
 
-## Technologies Used
+### Phase 1: Baseline Predictive Model
+* **Objective:** To test the initial hypothesis that climate data from a given day (`t`) could predict the volume change (`ΔV`) on that same day.
+* **Technique:** A `RandomForestRegressor` model was trained.
+* **Result:** The model yielded a **negative R² score (-0.36)**, proving the direct relationship was unfeasible and that the model performed worse than a simple average. The full analysis is in the `/Phase 1` directory.
+
+### Phase 2: Advanced Predictive Model
+* **Objective:** To improve the baseline model by providing it with "memory" through Feature Engineering and using a more powerful algorithm.
+* **Technique:** **Lag Features** (climate data from `t-1`, `t-2`, `t-3` days) were created, and the model was replaced with `XGBoost`.
+* **Result:** Despite the adjustments, the R² remained negative. The feature importance analysis revealed that the "signal" of evaporation was completely overshadowed by the "noise" of unmeasured variables (consumption and inflow). The full analysis is in the `/Phase 2` directory.
+
+### Phase 3: Pivot to an Analytical Model (Final Result)
+* **Objective:** To change the question. Instead of predicting the noisy `ΔV`, the focus shifted to **calculating** evaporation, one of its most significant components.
+* **Technique:** Implementation in Python of a physics-based mathematical model that uses **measured solar radiation** to estimate daily evapotranspiration, based on conversion factors from the FAO (Food and Agriculture Organization of the UN).
+* **Result:** Generation of a daily evaporation time series (`mm/day`) with physically realistic values and a clear, consistent seasonal pattern. The analysis is in the `/Phase 3` directory.
+
+## Key Findings and Insights
+The final analytical model led to the following conclusions:
+* The evaporation rate in the Carnaubal Reservoir region exhibits strong **seasonality**, with consistent peaks of up to **12 mm/day** during the dry season (second half of the year).
+* The predictive Machine Learning approach was ineffective not due to an algorithmic failure, but due to the **absence of critical variables** in the public data, a fundamental lesson in modeling complex systems.
+* The final project delivers an analytical tool capable of generating a robust estimate of evaporation, with potential use in water balance studies.
+
+## Technologies and Concepts
 * **Language:** Python
-* **Core Libraries:**
-    * **Pandas:** For time-series manipulation, cleaning, and merging.
-    * **Scikit-learn:** For training and evaluating Machine Learning models.
-    * **Matplotlib / Seaborn:** For data visualization and analysis.
-* **Tools:**
-    * **Git & GitHub:** For version control.
-    * **Jupyter Notebook:** For exploratory analysis and iterative development.
+* **Libraries:** Pandas, NumPy, Scikit-learn, XGBoost, Matplotlib, Seaborn
+* **Concepts:** Time-Series Analysis, Feature Engineering (Lag Features), Predictive Modeling (Random Forest, XGBoost), Model Validation (R², MAE), Feature Importance Analysis, Model Debugging (Data Leakage), Analytical Modeling.
+* **Tools:** Git/GitHub, Jupyter Notebook, Virtual Environments (`.venv`)
 
 ## Repository Structure
-* **/ (Root):** Contains this README and the main notebooks.
-* **/DF/:** Contains the DataFrames used and saved throughout the project, with a `README.md` explaining each one (Data Dictionary).
-* **/Fase 1/:** Contains the model created in the first phase and a `README.md` with a detailed analysis of the results and lessons learned.
+* **/DF/:** Contains the raw and processed DataFrames, with their respective Data Dictionary.
+* **/Fase 1/, /Fase 2/, /Fase 3/:** Contain the notebooks and analytical `READMEs` for each phase of the investigation.
 
 ## How to Run
-1.  Clone this repository: `git clone https://github.com/your-username/Sentinel-Flow.git`
-2.  Create and activate a virtual environment: `python -m venv .venv` and `source .venv/bin/activate` (or `.\.venv\Scripts\activate` on Windows).
-3.  Install dependencies: `pip install -r requirements.txt` (Create this file with `pip freeze > requirements.txt`).
-4.  Run the Jupyter notebooks in numerical order.
+1.  Clone this repository.
+2.  Create and activate a virtual environment.
+3.  Install dependencies with `pip install -r requirements.txt`.
+4.  Run the Jupyter notebooks in numerical order to reproduce the analysis.
 
 ## Author
 * **Marcos Antonio**
