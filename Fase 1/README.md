@@ -30,3 +30,37 @@ A principal lição desta fase foi que **os dados meteorológicos de um único d
 O resultado negativo do R² não foi um fracasso, mas sim uma **validação da necessidade da Fase 2**. O modelo de base nos provou que, para capturar a complexidade do problema, é essencial fornecer ao modelo um **contexto temporal**.
 
 Isso direciona o projeto para a **Engenharia de Features**, criando variáveis com "memória" (como *Lag Features* e *Janelas Móveis*) para os próximos modelos.
+
+---
+## English Version
+
+# Phase 1 Model Analysis
+
+## Objective of Phase 1
+The objective of this phase was to build a baseline model to test the project's feasibility. The hypothesis was that meteorological variables from a given day (`t`) could predict the reservoir's volume change on that same day (`t`).
+
+## Model Used
+* **Algorithm:** `RandomForestRegressor` from the Scikit-learn library.
+* **Features (Inputs):** Raw daily data for precipitation, global radiation, temperature, humidity, and wind.
+* **Target (Output):** `variacao_volume`, calculated as `volume_today - volume_yesterday`.
+
+## Obtained Results
+After training and evaluation on the test set, the results were:
+* **R² Score:** -0.3615
+* **Mean Absolute Error (MAE):** 0.013 hm³
+
+## Results Analysis: Why Was the R² Negative?
+
+A negative R² indicates that the model performed worse than a simple model that would just predict the average volume change for all days. The low MAE, on the other hand, shows that the average error in absolute terms was small.
+
+This apparent contradiction is explained by the nature of our target variable (`variacao_volume`):
+1.  **Low Variance:** The daily volume change of a massive reservoir is a very small number, almost always close to zero.
+2.  **R²'s Sensitivity:** The R² metric severely penalizes squared errors. In a low-variance scenario, even the model's small errors (reflected in the low MAE) become proportionally large when squared, causing the model's performance to be worse than simply using the mean as a prediction.
+
+## Main Insight and Lessons Learned
+
+The main lesson from this phase was that **meteorological data from a single day (`t`) does not contain sufficient information to predict the volume change on that same day.** Phenomena like evaporation have inertia; the energy absorbed by the water on a hot day (`t-1`) influences the evaporation on the following day (`t`), even if it is cloudy.
+
+The negative R² score was not a failure, but rather a **validation of the need for Phase 2**. The baseline model proved that, to capture the complexity of the problem, it is essential to provide the model with **temporal context**.
+
+This directs the project towards **Feature Engineering**, creating variables with "memory" (such as *Lag Features* and *Rolling Windows*) for the next models.
